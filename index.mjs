@@ -17,10 +17,16 @@ render=async({svg,id,scale=2})=>((
 ))();
 
 export default{
-	fetch:async(req,env,ctx)=>((
-			url=new URL(req.url)
-		)=>({
-			'/logo.png':async _=>new Response(await render({svg:await(await env.ASSETS.fetch(`${url.origin}/logo.svg`)).text(),id:url.search.slice(1)}))
-		}[url.pathname]??(_=>env.ASSETS.fetch(req)))()
-	)()
+	fetch:async(req,env,ctx,{url=new URL(req.url),w,x}={})=>(
+		w=await env.ASSETS.fetch(req),
+		w.status<400?w:(
+			url.pathname.endsWith('.png')&&
+			(
+				x=await env.ASSETS.fetch(`${url.origin}/${url.pathname.replace(/\.png$/,'.svg')}`),
+				x.status<400&&(x=await x.text())
+			)&&
+			new Response(await render({svg:x,id:url.search.slice(1)}))||
+			w
+		)
+	)
 }
