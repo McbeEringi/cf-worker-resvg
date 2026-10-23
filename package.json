@@ -1,7 +1,6 @@
 {
   "type":"module",
-  "exports":"module",
-  "main":"index.mjs",
+  "main":"./index.mjs",
   "dependencies": {
     "@resvg/resvg-wasm": "^2.6.2"
   }
